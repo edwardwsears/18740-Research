@@ -7,7 +7,7 @@
 
 \title{
 18-740 Fall 2013 Research Proposal: Tournament Prefetcher}
-\author{Ryan MacDonald \and Edward Sears}
+\author{Ryan Macdonald \and Edward Sears}
 
 \date{}
 \maketitle
@@ -17,7 +17,7 @@
 \begin{abstract}
 In this paper, we will propose a plan to research the performance benefit of 
 a tournament style prefetcher. We will begin by defining the problem
-and describe why our idea can help sove this problem.  Next, we will formally
+and describe why our idea can help solve this problem.  Next, we will formally
 state our hypothesis and finish by describing the methodology of our research.
 \end{abstract}
 
@@ -34,26 +34,6 @@ in the case of a more random, noncontiguous access pattern. Thus, modern process
 a more general purpose, hybrid prefetching mechanism to preserve optimal memory latency 
 tolerance over a variety of memory demands within and between applications.
 
-
-\begin{table}[h!]
-  \centering
-  \begin{tabular}{|l|l|l|}
-    \hline
-    \textbf{Prefetcher type} & \textbf{Advantages} & \textbf{Timeliness}\\
-    \hline
-    \hline
-     Next-block& Simple to implement~\cite{mutlu13} & High\\
-    \hline
-    Stream-based & Can cover linear & Medium\\
-         & access patterns~\cite{mutlu13} & \\
-    \hline
-    Markov & Can cover arbitrary& Low\\
-         & access patterns~\cite{mutlu13} & \\
-    \hline
-  \end{tabular}
-  \caption{Prefetcher Advantages}
-  \label{table:formatting}
-\end{table}
 
 \section{Novelty}
 
