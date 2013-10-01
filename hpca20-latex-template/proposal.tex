@@ -1,14 +1,13 @@
 \documentclass[pageno]{jpaper}
 
-%replace XXX with the submission number you are given from the HPCA submission site.
-\newcommand{\hpcasubmissionnumber}{XXX}
 
 \usepackage[normalem]{ulem}
 
 \begin{document}
 
 \title{
-18-740 Fall 2013 Research Proposal}
+18-740 Fall 2013 Research Proposal: Tournament Prefetcher}
+\author{Ryan MacDonald \and Edward Sears}
 
 \date{}
 \maketitle
@@ -24,192 +23,129 @@ state our hypothesis and finish by describing the methodology of our research.
 
 \section{The Problem}
 
-This document provides the formatting instructions for submissions to the 20th
-Annual IEEE International Symposium on High Performance Computer Architecture,
-2014. In an effort to respect the efforts of reviewers and in
-the interest of fairness to all prospective authors, we request that all
-submissions to HPCA 20 follow the formatting and submission rules detailed
-below.  Submissions that violate these instructions may not be
-reviewed, at the discretion of the program chair, in order to maintain a review
-process that is fair to all potential authors.  This is a generous format,
-with plenty of space -- there should be no need to tweak it in any
-significant way.
+Prefetching is a memory latency tolerance mechanism which aims to anticipate 
+accesses to cache blocks and speculatively issue memory requests to those blocks with 
+the intent of warming the cache for future execution. There are various types of prefetching 
+strategies used in modern processors including stream, next-block, and Markov prefetchers. 
+While each of these prefetching strategies has its advantages, none of them are optimal 
+for all memory access patterns and workloads. See table 1. For example, a stream-based strategy may 
+provide accurate, timely prefetches for a streaming access pattern, but it would underperform 
+in the case of a more random, noncontiguous access pattern. Thus, modern processors require 
+a more general purpose, hybrid prefetching mechanism to preserve optimal memory latency 
+tolerance over a variety of memory demands within and between applications.
 
-An example submission (formatted using the HPCA-20 submission format) that
-contains the submission and formatting guidelines can be downloaded from
-the location cited below.  Complete details can be found on the
-conference website at {\em hpcaconf.org}.
 
-\noindent{\bf Changes to last year's format:}
-
-\begin{itemize}
-\item Papers are limited to 11 pages not including references.
-\item Each reference must specify all authors (no {\it et al.}).
-\end{itemize}
-
-\noindent{\bf Acceptance philosophy}
-
-Every effort will be made to judge a paper on its own merits. There will be no target acceptance rate. We expect to accept a wide range of papers with appropriate expectations for evaluation. 
-While papers that build on significant past work with strong evaluations are valuable, papers that open new areas with less rigorous evaluation are even more so.
-
-All questions regarding paper formatting and submission should be directed to
-the \href{mailto:enright@eecg.toronto.edu}{program chair}.
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{Prefetcher type} & \textbf{Advantages} & \textbf{Timeliness}\\
+    \hline
+    \hline
+     Next-block& Simple to implement~\cite{mutlu13} & High\\
+    \hline
+    Stream-based & Can cover linear & Medium\\
+         & access patterns~\cite{mutlu13} & \\
+    \hline
+    Markov & Can cover arbitrary& Low\\
+         & access patterns~\cite{mutlu13} & \\
+    \hline
+  \end{tabular}
+  \caption{Prefetcher Advantages}
+  \label{table:formatting}
+\end{table}
 
 \section{Novelty}
 
-\subsection{Paper Formatting}
+Research has been conducted towards continuously monitoring prefetcher metrics including 
+accuracy, timeliness, and cache pollution~\cite{srinath07}; based on these measurements, prefetch behavior 
+can be tuned and optimized by hardware at run-time. While this research has had success 
+in that it is able to dynamically optimize prefetch aggression, it falls short in that 
+it does not attempt to dynamically change its fundamental prefetching strategy. This research 
+will be novel in that it will attempt to dynamically determine an optimal prefetching 
+strategy(stream, next-block, Markov, etc.) over changing memory demands. 
 
-All submissions should contain a maximum of 11 pages of single-spaced
-two-column text and figures excluding references. You can use an unlimited number of extra pages for references. 
-If you are using \LaTeX~\cite{lamport94} 
-to typeset your paper, then we 
-strongly suggest
-that you use the template available at
-\url{http://www.eecg.toronto.edu/~enright/hpca20template.tar.gz} -- this
-document was prepared with that template.  This document can
-also be downloaded at \url{http://www.eecg.toronto.edu/~enright/hpca20sample.pdf}.
-If you are using a different
-software package to typeset your paper, then please adhere to the guidelines
-given in Table~\ref{table:formatting}.
+\section{Idea}
+
+Our idea is to design, implement, and analyze the advantages and disadvantages of a hybrid, 
+tournament prefetching mechanism which determines an optimal prefetching strategy at run-time 
+based on the memory access pattern of the application currently running. One area of analysis 
+will be which types of hardware prefetchers (stream, next-block, Markov, etc.) perform best 
+together when placed in configuration with each other. A question this research will seek to 
+answer is, “From M possible prefetching strategies, which N are optimal to include in a 
+hybrid configuration?”
+
+\section{Hypothesis}
+
+We hypothesize that a prefetcher which dynamically takes into account performance metrics 
+and tunes its strategy accordingly will outperform the accuracy, timeliness, and cache-pollutant 
+behavior of a static, non-hybrid alternative. We anticipate that such a hybrid, tournament 
+prefetcher will perform akin to the optimal static prefetching strategy for any given workload.
+
+\section{Methodology}
+
+In order to evaluate our hypothesis, we will need to extensively modify an existing processor 
+simulator to model static and dynamic prefetching strategies. We plan to model and measure the 
+accuracy, timeliness, and cache-pollutant behavior of the baseline simulator without prefetching, 
+with each static prefetching strategy individually, and with various configurations of a hybrid, 
+tournament prefetcher.
+
+Modeling and measuring these metrics with each respective static prefetching mechanism should be 
+relatively straightforward because they have already been documented and implemented~\cite{srinath07}, however, 
+modeling the hybrid tournament prefetcher will be a bit more complicated. Our current design is 
+that the hybrid prefetcher will instantiate various static prefetchers as well as a prediction unit, 
+responsible for determining the optimal static prefetcher to use at any given time. This prediction unit 
+will consist of a hardware structure which contains a speculative cache (s-cache) for each prefetcher 
+strategy, keeping track of what the accuracy, timeliness, and cache blocks would be if the respective 
+strategy had been used. The prediction unit will be updated in real time during program execution and, 
+in this fashion, the optimal prefetching mechanism will be tracked. Thus, only one prefetcher will be 
+issuing fetches to memory at a time; the others will merely be keeping track of what fetches they would’ve 
+issued and updating their state accordingly.
+
+We also wish to investigate how such a hybrid prefetcher could be integrated with previously explored throttling 
+techniques. As a means to this end we hope to acquire, study, and modify the simulator used for this research~\cite{srinath07}.
+
+\newpage
+\section{Plan for final report}
+
 
 \begin{table}[h!]
   \centering
   \begin{tabular}{|l|l|}
     \hline
-    \textbf{Field} & \textbf{Value}\\
+    \textbf{Milestone} & \textbf{Expected Progress}\\
     \hline
     \hline
-    Page limit & {\bf 11} pages, \\
-& {\bf not including references}\\
+    1 & Finalized design for hybrid, \\
+        &tournament prefetcher; implemented, \\
+        &simulated, and benchmarked baseline, \\
+        &static prefetchers.\\
     \hline
-    Paper size & US Letter 8.5in $\times$ 11in\\
+    2 & Implemented, simulated and \\
+        &benchmarked hybrid, tournament \\
+        &prefetcher; begin putting together\\
+        &final results, data, report and \\
+        &presentation.\\
     \hline
-    Top margin & 1in\\
+    Final Report & Integrate analysis of \\
+                    &"best N static prefetchers"\\
+                    &question and feedback \\
+                    &directed throttling.\\
     \hline
-    Bottom margin & 1in\\
-    \hline
-    Left margin & 0.75in\\
-    \hline
-    Right margin & 0.75in\\
-    \hline
-    Separation between columns & 0.25in\\
-    \hline
-    Body font & 10pt\\
-    \hline
-    Abstract font & 10pt, italicized\\
-    \hline
-    Section heading font & 12pt, bold\\
-    \hline
-    Subsection heading font & 10pt, bold\\
-    \hline
-    Caption font & 9pt, bold\\
-    \hline
-    References & 8pt, no page limit\\
-& list all authors' names \\
+    Moonshot goals & Implement hybrid prefetcher in RTL,\\
+                    &use design compiler (DC) tools \\
+                    &to further analyze performance, \\
+                    &area, power, scalability;\\
+                    &investigate possible use of ISA \\
+                    &extensions and pragmas to \\
+                    &explicitly allow the programmer to\\
+                    &specify optimal prefetch strategy.\\
     \hline
   \end{tabular}
-  \caption{Formatting guidelines for submission.}
   \label{table:formatting}
 \end{table}
 
-\textbf{Please ensure that you include page numbers with your
-submission}. This makes it easier for the reviewers to refer to
-different parts of your paper when they provide comments.
 
-Also, please ensure that your submission has a banner at the top of 
-the title page, similar to this one, which contains the submission
-number and the notice of confidentiality.  If using the template,
-just replace XXX in the template with the submission number
-you receive from the submission website.
-
-\subsection{Content}
-
-\noindent\textbf{\sout{Author List.}} All submissions are double
-blind. Therefore, please do not include any author names in the
-submission. You must also ensure that the metadata included in the
-PDF does not give away the authors. If you are improving upon your
-prior work, refer to your prior work in the third person.
-
-\noindent\textbf{Figures and Tables.} Ensure that the figures and
-tables are legible.  Please also ensure that you refer to your
-figures in the main text. The proceedings will be printed in
-gray-scale, and many reviewers print the papers in
-gray-scale. Therefore, if you must use colors for your figures, ensure
-that the different colors are highly distinguishable in gray-scale.
-If a figure is not easily understandable in gray-scale, then assume
-it will not be understood by the reviewers.  In many cases, it
-is better to just prepare your documents without color.
-
-\noindent\textbf{Main Body.} Avoid bad page or column breaks in
-your main text, i.e., last line of a paragraph at the top of a
-column or first line of a paragraph at the end of a column. If you
-begin a new section or sub-section near the end of a column,
-ensure that you have at least 2 lines of body text on the same
-column. 
-
-\noindent\textbf{References.} There is no length limit for references.  {\bf Each reference must explicitly list all authors of the paper} (no {\it et al.}).  Author of NSF proposals should be familiar with this requirement.  Knowing all authors of related work will help find the best reviewers. 
-
-\section{Idea}
-
-\subsection{Paper Authors}
-
-Declare all the authors of the paper upfront. Addition/removal of authors once
-the paper is accepted will have to be approved by the program chair.  The
-paper selection process is carefully run in a way that maximizes fairness
-by seeking to eliminate all conflicts of interest.  Late changes to author 
-lists can invalidate that process.
-
-\subsection{Declaring Conflicts of Interest}
-
-The authors must register all their conflicts into the paper submission site.
-Conflicts are needed to resolve assignment of reviewers. Please get the conflicts
-right.  You have several days between the registration of the paper and final
-submission -- there is no need to do the conflicts in a rush at the last
-second. If a paper is found to
-have an undeclared conflict that causes a problem, the paper may be rejected.
-
-Please declare a conflict of interest with the following for any author of a paper:
-
-\begin{enumerate}
-\item PhD advisor
-\item Other past or current advisors
-\item Current or past students
-\item People whom you have collaborated in the last 5 years. This collaboration can consist of a joint research or development project, a joint paper, or when there is direct funding from the potential reviewer (as opposed to company funding) to an author of the paper. Co-participation in professional activities, such as tutorials or studies, is not cause for conflict. When in doubt, the author should check with the PC chair. 
-\item People with the same current affiliation or who were in the same institution in the last 5 years.
-%\item People whom you co-authored papers with in the last 5 years
-%\item People whom you co-authored funded proposals with in the last 5 years.
-\item Between people whose relationship prevents the reviewer from being objective in his/her assessment. Please be reasonable.  For
-example, just because a reviewer works on similar topics as the paper you are
-submitting is on, you cannot declare a conflict of interest with them.
-\end{enumerate}
-
-All conflicts must be justified.
-You will have to declare all conflicts with PC members as well as non-PC members 
-with whom you
-have a conflict of interest.  When in doubt, contact the \href{mailto:enright@eecg.toronto.edu}{program chair}.
-
-\subsection{Concurrent Submissions and Resubmissions of Already Published Papers}
-
-By submitting a manuscript to HPCA-20, the authors guarantee that the
-manuscript has not been previously published or accepted for publication in a
-substantially similar form in any conference or journal. The authors also
-guarantee that no paper which contains significant overlap with the
-contributions of the submitted paper is under review to any other conference or
-journal or workshop, or will be submitted to one of them during the HPCA-20
-review period. Violation of any of these conditions will lead to rejection.
-
-Extended versions of papers accepted to IEEE Computer Architecture Letters can
-be submitted to HPCA-20.  If you are in doubt, contact the \href{mailto:enright@eecg.toronto.edu}{program chair}.
-
-\subsection{Submission Site}
-
-The submission site is located at \url{http://hpca20.eecg.toronto.edu/conf}.
-
-\section{Hypothesis}
-
-\section{Methodology}
-
-\section{Plan for final report}
 
 \bstctlcite{bstctl:etal, bstctl:nodash, bstctl:simpurl}
 \bibliographystyle{IEEEtranS}
