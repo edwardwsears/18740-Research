@@ -66,6 +66,7 @@ protected:
     // miss counter information
     uint32 prefetchMiss;
     uint32 useMiss;
+    uint32 prefetchDemandMiss; //for cache pollutant metric
     
     // cycle information
     cycles_t prefetchCycle;
@@ -81,6 +82,8 @@ protected:
   uint32 _numSets;
   generic_tagstore_t <addr_t, TagEntry> _tags;
   policy_value_t _pval;
+  // tag store for no_prefetch
+  generic_tagstore_t <addr_t, TagEntry> _tags_noprefetch;
 
   vector <uint32> _missCounter;
   vector <uint64> _procMisses;
@@ -94,6 +97,7 @@ protected:
   NEW_COUNTER(reads);
   NEW_COUNTER(writebacks);
   NEW_COUNTER(misses);
+  NEW_COUNTER(prefetchDemandMisses);
   NEW_COUNTER(evictions);
   NEW_COUNTER(dirty_evictions);
 
@@ -163,6 +167,7 @@ public:
     INITIALIZE_COUNTER(reads, "Read Accesses")
     INITIALIZE_COUNTER(writebacks, "Writeback Accesses")
     INITIALIZE_COUNTER(misses, "Total Misses")
+    INITIALIZE_COUNTER(prefetchDemandMisses, "Demand Misses caused by Prefetcher")
     INITIALIZE_COUNTER(evictions, "Evictions")
     INITIALIZE_COUNTER(dirty_evictions, "Dirty Evictions")
 
@@ -192,6 +197,7 @@ public:
     // compute number of sets
     _numSets = (_size * 1024) / (_blockSize * _associativity);
     _tags.SetTagStoreParameters(_numSets, _associativity, _policy);
+    _tags_noprefetch.SetTagStoreParameters(_numSets, _associativity, _policy);
     _missCounter.resize(_numSets, 0);
     _procMisses.resize(_numCPUs, 0);
 
@@ -247,6 +253,7 @@ protected:
     // compute the cache block tag
     addr_t ctag = VADDR(request) / _blockSize;
     uint32 index = _tags.index(ctag);
+    uint32 index_noprefetch = _tags_noprefetch.index(ctag);
 
     // check if its a read or write back
     switch (request -> type) {
@@ -267,6 +274,12 @@ protected:
         
         // read to update state
         TagEntry &tagentry = _tags[ctag];
+
+        //for cache pollution metric
+        if (_tags_noprefetch.lookup(ctag)){
+            _tags_noprefetch.read(ctag);
+            TagEntry &tagentry_noprefetch = _tags_noprefetch[ctag];
+        }
         
         // check the prefetched state
         switch (tagentry.prefState) {
@@ -298,6 +311,10 @@ protected:
       }
       else {
         INCREMENT(misses);
+        //for cache pollution metric
+        if (_tags_noprefetch.lookup(ctag)){
+            INCREMENT(prefetchDemandMisses);
+        }
         request -> AddLatency(_tagStoreLatency);
         _missCounter[index] ++;
         if (!_done.test(request -> cpuID)) _procMisses[request -> cpuID] ++;
@@ -334,6 +351,12 @@ protected:
         _tags[ctag].dirty = true;
       else
         INSERT_BLOCK(ctag, true, request);
+
+      //repeat for noprefetch tagstore (for cache pollutant metric)
+      if (_tags_noprefetch.lookup(ctag))
+        _tags_noprefetch[ctag].dirty = true;
+      else
+        INSERT_BLOCK_NOPREFETCH(ctag, true, request);
 
       request -> serviced = true;
       return _tagStoreLatency;
@@ -438,6 +461,27 @@ protected:
         writeback -> ip = request -> ip;
         SendToNextComponent(writeback);
       }
+    }
+  }
+  void INSERT_BLOCK_NOPREFETCH(addr_t ctag, bool dirty, MemoryRequest *request) {
+
+    //For cache pollution metric
+    //keep tagstore of entries w/o prefetches
+    table_t <addr_t, TagEntry>::entry tagentry_noprefetch;
+
+    // insert the block into the cache
+    tagentry_noprefetch = _tags_noprefetch.insert(ctag, TagEntry(), _pval);
+    _tags_noprefetch[ctag].vcla = BLOCK_ADDRESS(VADDR(request), _blockSize);
+    _tags_noprefetch[ctag].pcla = BLOCK_ADDRESS(PADDR(request), _blockSize);
+    _tags_noprefetch[ctag].dirty = dirty;
+    _tags_noprefetch[ctag].appID = request -> cpuID;
+    _tags_noprefetch[ctag].prefState = NOT_PREFETCHED;
+
+    uint32 index = _tags_noprefetch.index(ctag);
+
+    // Handle prefetch
+    if (request -> type == MemoryRequest::PREFETCH) {
+        //do nothing
     }
   }
 };
