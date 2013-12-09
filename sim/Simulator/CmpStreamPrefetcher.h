@@ -14,12 +14,33 @@
 #include "MemoryComponent.h"
 #include "GenericTable.h"
 #include "Types.h"
+#include "AggressivenessFunctions.h"
 
 // -----------------------------------------------------------------------------
 // Standard includes
 // -----------------------------------------------------------------------------
 
 #include <cstdlib>
+
+//added
+#define NUM_METRICS 5
+#define ACC_INDEX 0
+#define LAT_INDEX 1
+#define POL_INDEX 3
+#define COV_INDEX 3
+#define BND_INDEX 4
+//param defines
+#define LOW_ACC -1
+#define MED_ACC 0
+#define HIGH_ACC 1
+#define HIGH true
+#define LOW false
+//decision defines
+#define DEC -1
+#define NOC 0
+#define INC 1
+//masks the input to the nth bit position
+#define MASK(mask,input,n) ((input << n) | mask)
 
 // -----------------------------------------------------------------------------
 // Class: CmpStreamPrefetcher
@@ -50,6 +71,9 @@ protected:
   bool _backInsert;
   bool _fake;
 
+  uint32_t _aggressiveness;
+
+  bool metric_en[NUM_METRICS];
 
   // -------------------------------------------------------------------------
   // Private members
@@ -126,10 +150,159 @@ public:
     _tablePolicy = "lru";
     _trainDistance = 16;
     _numTrains = 2;
-    _distance = 24;
-    _degree = 4;
+    _distance = 4;
+    _degree = 1;
     _maxFakeCounter = 16;
     _fake = false;
+
+    //added
+    _aggression = 1;
+    metric_en[ACC_INDEX] = true;
+    metric_en[LAT_INDEX] = true;
+    metric_en[POL_INDEX] = true;
+    metric_en[COV_INDEX] = true;
+    metric_en[BND_INDEX] = true;
+  }
+
+  void AdjustAggressiveness(uint32_t accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+
+	int aggressionChange;
+
+	aggressiionChange = ComputeNewAggressiveness(accuracy,late,pollute,coverage,mem_band);
+
+	if(aggressionChange == NOC) return;
+	else{
+	
+		// aggression has bounds [1,5]
+		if(!(this._aggression == 1 && aggressionChange == DEC) &&
+		   !(this._aggression == 5 && aggressionChange == INC)){
+			this._aggression += aggressionChange;
+		}
+	
+		switch(this._aggressiveness){
+			case 1:
+				this._distance = 4;
+				this._degree = 1;
+				break;
+			case 2:
+				this._distance = 8;
+				this._degree = 1;
+				break;
+			case 3:
+				this._distance = 16;
+				this._degree = 2;
+				break;
+			case 4:
+				this._distance = 32;
+				this._degree = 4;
+				break;
+			case 5:
+				this._distance = 64;
+				this._degree = 4;
+				break;
+			default: break;
+		}
+
+	}
+
+  }
+
+  uint32_t ComputeNewAggressiveness(uint32_t accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+
+	// accuracy, lateness, pollute, coverage, mem_band
+	switch(metric_en){
+		case {true,false,false,false,false}:
+			return ComputeAggressiveness0(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,false,true,false,false}:
+			return ComputeAggressiveness1(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,false,false,false,true}:
+			return ComputeAggressiveness2(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,true,false,false,false}:
+			return ComputeAggressiveness3(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,false,false,true,false}:
+			return ComputeAggressiveness4(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,false,true,false,false}:
+			return ComputeAggressiveness5(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,false,false,false,true}:
+			return ComputeAggressiveness6(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,true,false,true,false}:
+			return ComputeAggressiveness7(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,true,true,false,false}:
+			return ComputeAggressiveness8(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,true,false,false,true}:
+			return ComputeAggressiveness9(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,false,true,true,false}:
+			return ComputeAggressiveness10(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,false,false,true,true}:
+			return ComputeAggressiveness11(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,false,true,false,true}:
+			return ComputeAggressiveness12(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,true,false,true,false}:
+			return ComputeAggressiveness13(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,false,true,true,false}:
+			return ComputeAggressiveness14(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,false,true,false,true}:
+			return ComputeAggressiveness15(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,true,true,true,false}:
+			return ComputeAggressiveness16(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,true,false,true,true}:
+			return ComputeAggressiveness17(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,true,true,false,false}:
+			return ComputeAggressiveness18(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,true,false,false,true}:
+			return ComputeAggressiveness19(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,false,false,true,true}:
+			return ComputeAggressiveness20(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,true,true,false,true}:
+			return ComputeAggressiveness21(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,false,true,true,true}:
+			return ComputeAggressiveness22(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,true,true,true,false}:
+			return ComputeAggressiveness23(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,true,false,true,true}:
+			return ComputeAggressiveness24(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {false,true,true,true,true}:
+			return ComputeAggressiveness25(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,true,true,false,true}:
+			return ComputeAggressiveness26(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,false,true,true,true}:
+			return ComputeAggressiveness27(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case {true,true,true,true,true}:
+			return ComputeAggressiveness28(accuracy,late,pollute,coverage,mem_band);
+			break;
+		default: 
+			return ComputeAggressiveness28(accuracy,late,pollute,coverage,mem_band);
+			break;
+	}	
+	
   }
 
 
@@ -204,6 +377,13 @@ protected:
   // -------------------------------------------------------------------------
 
   cycles_t ProcessRequest(MemoryRequest *request) {
+
+    //added
+    if(L2_cache_misses == L2_PERIOD_LENGTH){
+	GetMetrics();
+	AdjustAggressiveness(accuracy,late,pollute,coverage,mem_band);
+	L2_cache_misses = 0;
+    }
 
     if (request -> type == MemoryRequest::WRITE ||
         request -> type == MemoryRequest::WRITEBACK ||

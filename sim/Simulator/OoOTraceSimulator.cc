@@ -24,6 +24,14 @@
 #include <vector>
 #include <getopt.h>
 
+//added
+// Number of L2 misses between FDP aggressiveness adjusting
+#define MONITORING_PERIOD 8192
+
+// Global variable counting number of L2 misses
+uint32_t L2_miss_count;
+
+
 using namespace std;
 
 // -----------------------------------------------------------------------------

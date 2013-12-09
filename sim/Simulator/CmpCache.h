@@ -259,6 +259,8 @@ class CmpCache : public MemoryComponent {
           }
           else {
             INCREMENT(misses);
+	    //added 
+	    L2_miss_count++;
             INCREMENT(readmisses);
             latency = _tagStoreLatency;
           }
@@ -285,6 +287,8 @@ class CmpCache : public MemoryComponent {
           }
           else {
             INCREMENT(misses);
+	    //added
+	    L2_miss_count++;
             INCREMENT(writemisses);
           }
           return _tagStoreLatency;
@@ -310,6 +314,8 @@ class CmpCache : public MemoryComponent {
           }
           else {
             INCREMENT(misses);
+	    //added
+	    L2_miss_count++;
             INCREMENT(writemisses);
             latency = _tagStoreLatency;
           }

@@ -36,8 +36,7 @@
 
 #define WARM_UP 0
 #define HEART_BEAT 1
-#define END_SIMULATION 2
-
+#define END_SIMULATION 2 
 
 using namespace std;
 

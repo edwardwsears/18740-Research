@@ -168,6 +168,8 @@ protected:
 
   cycles_t ProcessRequest(MemoryRequest *request) {
 
+    printf("THE PREFETCHER IS GOING YO\n");
+
     if (request -> type == MemoryRequest::WRITE ||
         request -> type == MemoryRequest::WRITEBACK ||
         request -> type == MemoryRequest::PREFETCH) {
