@@ -41,7 +41,7 @@ class CmpTrace : public MemoryComponent {
     // Private members
     // -------------------------------------------------------------------------
 
-    gzFile _trace;
+    FILE* _trace;
 
 
   public:
@@ -83,7 +83,7 @@ class CmpTrace : public MemoryComponent {
 
     void StartSimulation() {
       string fileName = _simulationFolderName + "/" + _traceFileName + ".gz";
-      _trace = gzopen64(fileName.c_str(), "w");
+      _trace = fopen64(fileName.c_str(), "w");
       assert (_trace != Z_NULL);
     }
 
@@ -93,7 +93,7 @@ class CmpTrace : public MemoryComponent {
     // -------------------------------------------------------------------------
 
     void EndSimulation() {
-      gzclose(_trace);
+      fclose(_trace);
     }
 
 
@@ -115,7 +115,7 @@ class CmpTrace : public MemoryComponent {
 
     cycles_t ProcessRequest(MemoryRequest *request) {
       if (!_warmUp) {
-        gzprintf(_trace, "%llu %llu %llu %llu %u %u\n", request -> icount,
+        fprintf(_trace, "%llu %llu %llu %llu %u %u\n", request -> icount,
             request -> ip, request -> virtualAddress, 
             request -> physicalAddress, request -> size, request -> type);
       }

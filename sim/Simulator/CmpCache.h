@@ -15,6 +15,8 @@
 #include "MemoryComponent.h"
 #include "GenericTagStore.h"
 #include "Types.h"
+#include "CmpStreamPrefetcher.h"
+#include "L2_miss_count.h"
 
 // -----------------------------------------------------------------------------
 // Standard includes
@@ -110,6 +112,50 @@ class CmpCache : public MemoryComponent {
       _evictionLog = false;
       _exclusive = false;
     }
+
+
+  void AdjustAggressiveness(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+
+	int aggressionChange;
+
+	aggressionChange = ComputeAggressiveness0(accuracy,late,pollute,coverage,mem_band);
+
+	if(aggressionChange == NOC) return;
+	else{
+	
+		// aggression has bounds [1,5]
+		if(!(aggression == 1 && aggressionChange == DEC) &&
+		   !(aggression == 5 && aggressionChange == INC)){
+			aggression += aggressionChange;
+		}
+	
+		switch(aggression){
+			case 1:
+				prefetchDistance = 4;
+				prefetchDegree = 1;
+				break;
+			case 2:
+				prefetchDistance = 8;
+				prefetchDegree = 1;
+				break;
+			case 3:
+				prefetchDistance = 16;
+				prefetchDegree = 2;
+				break;
+			case 4:
+				prefetchDistance = 32;
+				prefetchDegree = 4;
+				break;
+			case 5:
+				prefetchDistance = 64;
+				prefetchDegree = 4;
+				break;
+			default: break;
+		}
+
+	}
+
+  }
 
 
     // -------------------------------------------------------------------------
@@ -213,10 +259,10 @@ class CmpCache : public MemoryComponent {
     cycles_t ProcessRequest(MemoryRequest *request) {
 
 	 //added
-    	if(L2_cache_misses == MONITORING_PERIOD){
+    	if(L2_miss_count == MONITORING_PERIOD){
 		GetMetrics();
 		AdjustAggressiveness(accuracy,late,pollute,coverage,mem_band);
-		L2_cache_misses = 0;
+		L2_miss_count = 0;
       	}
 
 

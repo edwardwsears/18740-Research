@@ -14,6 +14,7 @@
 #include "MemoryComponent.h"
 #include "GenericTable.h"
 #include "Types.h"
+#include "L2_miss_count.h"
 #include "AggressivenessFunctions.h"
 
 // -----------------------------------------------------------------------------
@@ -21,6 +22,7 @@
 // -----------------------------------------------------------------------------
 
 #include <cstdlib>
+
 
 //added
 #define NUM_METRICS 5
@@ -71,7 +73,7 @@ protected:
   bool _backInsert;
   bool _fake;
 
-  uint32_t _aggressiveness;
+  uint32 _aggression;
 
   bool metric_en[NUM_METRICS];
 
@@ -156,58 +158,17 @@ public:
     _fake = false;
 
     //added
-    _aggression = 1;
+/*    _aggression = 1;
     metric_en[ACC_INDEX] = true;
     metric_en[LAT_INDEX] = true;
     metric_en[POL_INDEX] = true;
     metric_en[COV_INDEX] = true;
-    metric_en[BND_INDEX] = true;
+    metric_en[BND_INDEX] = true;*/
   }
 
-  void AdjustAggressiveness(uint32_t accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
-	int aggressionChange;
-
-	aggressiionChange = ComputeNewAggressiveness(accuracy,late,pollute,coverage,mem_band);
-
-	if(aggressionChange == NOC) return;
-	else{
-	
-		// aggression has bounds [1,5]
-		if(!(this._aggression == 1 && aggressionChange == DEC) &&
-		   !(this._aggression == 5 && aggressionChange == INC)){
-			this._aggression += aggressionChange;
-		}
-	
-		switch(this._aggressiveness){
-			case 1:
-				this._distance = 4;
-				this._degree = 1;
-				break;
-			case 2:
-				this._distance = 8;
-				this._degree = 1;
-				break;
-			case 3:
-				this._distance = 16;
-				this._degree = 2;
-				break;
-			case 4:
-				this._distance = 32;
-				this._degree = 4;
-				break;
-			case 5:
-				this._distance = 64;
-				this._degree = 4;
-				break;
-			default: break;
-		}
-
-	}
-
-  }
-
-  uint32_t ComputeNewAggressiveness(uint32_t accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+/*
+  uint32 ComputeNewAggressiveness(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	// accuracy, lateness, pollute, coverage, mem_band
 	switch(metric_en){
@@ -303,7 +264,7 @@ public:
 			break;
 	}	
 	
-  }
+}*/
 
 
   // -------------------------------------------------------------------------
@@ -378,7 +339,9 @@ protected:
 
   cycles_t ProcessRequest(MemoryRequest *request) {
 
-   
+    _distance = prefetchDistance;
+    _degree = prefetchDegree;
+ 
     if (request -> type == MemoryRequest::WRITE ||
         request -> type == MemoryRequest::WRITEBACK ||
         request -> type == MemoryRequest::PREFETCH) {
