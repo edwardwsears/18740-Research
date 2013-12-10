@@ -18,6 +18,18 @@
 #include "CmpStreamPrefetcher.h"
 #include "L2_miss_count.h"
 
+// Global variable counting number of L2 misses
+uint32 L2_miss_count;
+
+// Feedback variables
+uint32 aggression;
+uint32 accuracy;
+bool late;
+bool pollute;
+bool coverage;
+bool mem_band;
+uint32 prefetchDistance;
+uint32 prefetchDegree;
 // -----------------------------------------------------------------------------
 // Standard includes
 // -----------------------------------------------------------------------------
@@ -113,6 +125,38 @@ class CmpCache : public MemoryComponent {
       _exclusive = false;
     }
 
+  //TODO change to only count within range (with formula from paper)
+  //this function computes metric ranges:
+  //
+  //accuracy: (int) low = -1, medium = 0, high = 1
+  //late: (boolean) late = true, not_late = false
+  //coverage: (boolean) high = true, low = false
+  //mem_band: (boolean) high = true, low = false
+  //pollute: (boolean) high = true, low = false
+  void GetMetrics(){
+    //accuracy
+    double accuracy_percentage = global_used_prefetches/global_prefetches;
+    if (accuracy_percentage>.75) accuracy = 1;
+    else if (accuracy_percentage<.40) accuracy = -1;
+    else accuracy = 0;
+
+    //late
+    double late_percentage = global_prefetch_use_miss/global_used_prefetches;
+    if (late_percentage < .001) late = false;
+    else late = true;
+
+    //coverage
+    double coverage_percentage = global_used_prefetches/(global_used_prefetches + global_misses);
+    if (coverage_percentage > .50) coverage = true;
+    else coverage = false;
+
+    //mem_band TODO
+
+    //pollute
+    double pollute_percentage = global_prefetchDemandMisses/global_misses;
+    if (pollute_percentage < .005) pollute = false;
+    else pollute = true;
+  }
 
   void AdjustAggressiveness(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
