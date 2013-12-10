@@ -212,6 +212,14 @@ class CmpCache : public MemoryComponent {
 
     cycles_t ProcessRequest(MemoryRequest *request) {
 
+	 //added
+    	if(L2_cache_misses == MONITORING_PERIOD){
+		GetMetrics();
+		AdjustAggressiveness(accuracy,late,pollute,coverage,mem_band);
+		L2_cache_misses = 0;
+      	}
+
+
       // update statistics
       INCREMENT(accesses);
 

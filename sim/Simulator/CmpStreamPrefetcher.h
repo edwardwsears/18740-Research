@@ -378,13 +378,7 @@ protected:
 
   cycles_t ProcessRequest(MemoryRequest *request) {
 
-    //added
-    if(L2_cache_misses == L2_PERIOD_LENGTH){
-	GetMetrics();
-	AdjustAggressiveness(accuracy,late,pollute,coverage,mem_band);
-	L2_cache_misses = 0;
-    }
-
+   
     if (request -> type == MemoryRequest::WRITE ||
         request -> type == MemoryRequest::WRITEBACK ||
         request -> type == MemoryRequest::PREFETCH) {
