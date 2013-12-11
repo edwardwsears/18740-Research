@@ -45,7 +45,7 @@ class TraceReader {
     // -------------------------------------------------------------------------
 
     bool _noTrace;
-    FILE* _trace;
+    gzFile _trace;
     uint64 _startIcount;
     uint64 _lastIcount;
     uint64 _icountShift;
@@ -79,7 +79,7 @@ class TraceReader {
       _first = true;
 
       // open the trace file
-      _trace = fopen64(_traceFileName.c_str(), "r");
+      _trace = gzopen(_traceFileName.c_str(), "r");
       if (_trace == Z_NULL) {
         _noTrace = true;
         // TODO: Error message
@@ -101,7 +101,7 @@ class TraceReader {
       char *ret;
 
       // read a line from the trace
-      ret = fgets( line, 300, _trace);
+      ret = gzgets(_trace, line, 300);
 
       // if there is a valid entry
       if (ret != Z_NULL) {
@@ -164,8 +164,8 @@ class TraceReader {
       else if (_wrapAround) {
         _icountShift = _lastIcount + 1;
         // close and reopen the file
-        fclose(_trace);
-        _trace = fopen64(_traceFileName.c_str(), "r");
+        gzclose(_trace);
+        _trace = gzopen(_traceFileName.c_str(), "r");
         // return the next request
         return NextRequest();
       }

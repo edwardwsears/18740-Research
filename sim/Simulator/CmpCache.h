@@ -140,14 +140,20 @@ class CmpCache : public MemoryComponent {
   //mem_band: (boolean) high = true, low = false
   //pollute: (boolean) high = true, low = false
   void GetMetrics(){
-    cout << "enter get metrics"<<endl;
+    cout << "WHAT HTE FUCK"<<endl;
     //accuracy
     double accuracy_percentage = global_used_prefetches/global_prefetches;
+    cout << "enter get metrics"<<endl;
+    fflush(stdout);
     double accuracy_range_percentage = .5*accuracy_percentage + .5*prev_accuracy_percentage;
+    cout << "enter get metrics"<<endl;
     if (accuracy_range_percentage>.75) accuracy = 1;
     else if (accuracy_percentage<.40) accuracy = -1;
     else accuracy = 0;
     prev_accuracy_percentage = accuracy_percentage;
+   
+    cout << "accuracy done" << endl;
+    fflush(stdout);
 
     //late
     double late_percentage = global_prefetch_use_miss/global_used_prefetches;
@@ -156,6 +162,9 @@ class CmpCache : public MemoryComponent {
     else late = true;
     prev_late_percentage = late_percentage;
 
+    cout << "lateness done" << endl;
+    fflush(stdout);
+
     //coverage
     double coverage_percentage = global_used_prefetches/(global_used_prefetches + global_misses);
     double coverage_range_percentage = .5*coverage_percentage + .5*prev_coverage_percentage;
@@ -163,10 +172,17 @@ class CmpCache : public MemoryComponent {
     else coverage = false;
     prev_coverage_percentage = coverage_percentage;
 
+    cout << "coverage done" << endl;
+    fflush(stdout);
+
+
     //mem_band
     double mshr_used_percentage = global_used_mshrs/global_mshrs;
     if (mshr_used_percentage<.25) mem_band = true;
     else mem_band = false;
+
+    cout << "mem_band done" << endl;
+    fflush(stdout);
 
     //pollute
     double pollute_percentage = global_prefetchDemandMisses/global_misses;
@@ -174,12 +190,17 @@ class CmpCache : public MemoryComponent {
     if (pollute_range_percentage < .005) pollute = false;
     else pollute = true;
     prev_pollute_percentage = pollute_percentage;
+
+    cout << "exit get metrics" << endl;
+    fflush(stdout);
+
   }
 
   void AdjustAggressiveness(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	int aggressionChange;
 
+	cout << "LOLZ ADJUSTING AGGRESIVENESS" << endl;
 	aggressionChange = ComputeAggressiveness0(accuracy,late,pollute,coverage,mem_band);
 
 	if(aggressionChange == NOC) return;
@@ -323,6 +344,8 @@ class CmpCache : public MemoryComponent {
 	 //added
     	if(L2_miss_count == MONITORING_PERIOD){
 		GetMetrics();
+		cout << "Adjust Accuracy" << endl;
+		fflush(stdout);
 		AdjustAggressiveness(accuracy,late,pollute,coverage,mem_band);
 		L2_miss_count = 0;
       	}
