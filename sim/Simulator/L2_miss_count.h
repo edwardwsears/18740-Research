@@ -4,6 +4,7 @@
 #define MONITORING_PERIOD 8192
 
 extern int aggression;
+extern int prefetcherNum;
 
 // Feedback variables
 extern int accuracy;

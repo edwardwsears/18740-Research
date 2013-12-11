@@ -41,6 +41,7 @@ int main(int argc, char **argv) {
   string folder("");
   uint32 numCPUs = 0;
   uint32 oooWindow = 1;
+  int prefetcherNum = 0; 
   uint64 warmUp = 0;
   uint64 runTime = 0;
   uint64 heartBeat = 0;
@@ -62,6 +63,7 @@ int main(int argc, char **argv) {
     {"ooo-window", required_argument, 0, 'i'},
     {"synthetic", required_argument, 0, 'k'},
     {"mem-gap", required_argument, 0, 'm'},
+    {"prefetcher", required_argument, 0, 'n'},
   };
 
   int c = 0;
@@ -71,7 +73,7 @@ int main(int argc, char **argv) {
   string::size_type index;
   string::size_type next;
 
-  c = getopt_long(argc, argv, "a:b:c:d:e:f:g:h:i:", cmd_options, &optindex);
+  c = getopt_long(argc, argv, "a:b:c:d:e:f:g:h:i:n:", cmd_options, &optindex);
 
   while (c != -1) {
 
@@ -156,6 +158,11 @@ int main(int argc, char **argv) {
     case 'm':
       memGap = atoi(optarg);
       break;
+ 
+    case 'n':
+      prefetcherNum = atoi(optarg);
+      cout << "Using prefetcher num = " << prefetcherNum << endl;
+      break; 
 
       // -----------------------------------------------------------------------
       // wrong option

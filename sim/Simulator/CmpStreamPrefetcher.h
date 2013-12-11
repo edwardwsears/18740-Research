@@ -167,106 +167,6 @@ public:
   }
 
 
-/*
-  uint32 ComputeNewAggressiveness(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
-
-	// accuracy, lateness, pollute, coverage, mem_band
-	switch(metric_en){
-		case {true,false,false,false,false}:
-			return ComputeAggressiveness0(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,false,true,false,false}:
-			return ComputeAggressiveness1(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,false,false,false,true}:
-			return ComputeAggressiveness2(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,true,false,false,false}:
-			return ComputeAggressiveness3(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,false,false,true,false}:
-			return ComputeAggressiveness4(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,false,true,false,false}:
-			return ComputeAggressiveness5(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,false,false,false,true}:
-			return ComputeAggressiveness6(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,true,false,true,false}:
-			return ComputeAggressiveness7(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,true,true,false,false}:
-			return ComputeAggressiveness8(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,true,false,false,true}:
-			return ComputeAggressiveness9(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,false,true,true,false}:
-			return ComputeAggressiveness10(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,false,false,true,true}:
-			return ComputeAggressiveness11(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,false,true,false,true}:
-			return ComputeAggressiveness12(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,true,false,true,false}:
-			return ComputeAggressiveness13(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,false,true,true,false}:
-			return ComputeAggressiveness14(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,false,true,false,true}:
-			return ComputeAggressiveness15(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,true,true,true,false}:
-			return ComputeAggressiveness16(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,true,false,true,true}:
-			return ComputeAggressiveness17(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,true,true,false,false}:
-			return ComputeAggressiveness18(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,true,false,false,true}:
-			return ComputeAggressiveness19(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,false,false,true,true}:
-			return ComputeAggressiveness20(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,true,true,false,true}:
-			return ComputeAggressiveness21(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,false,true,true,true}:
-			return ComputeAggressiveness22(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,true,true,true,false}:
-			return ComputeAggressiveness23(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,true,false,true,true}:
-			return ComputeAggressiveness24(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {false,true,true,true,true}:
-			return ComputeAggressiveness25(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,true,true,false,true}:
-			return ComputeAggressiveness26(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,false,true,true,true}:
-			return ComputeAggressiveness27(accuracy,late,pollute,coverage,mem_band);
-			break;
-		case {true,true,true,true,true}:
-			return ComputeAggressiveness28(accuracy,late,pollute,coverage,mem_band);
-			break;
-		default: 
-			return ComputeAggressiveness28(accuracy,late,pollute,coverage,mem_band);
-			break;
-	}	
-	
-}*/
-
-
   // -------------------------------------------------------------------------
   // Virtual functions to be implemented by the components
   // -------------------------------------------------------------------------
@@ -339,10 +239,7 @@ protected:
 
   cycles_t ProcessRequest(MemoryRequest *request) {
 
-    _distance = prefetchDistance;
-    _degree = prefetchDegree;
- 
-    if (request -> type == MemoryRequest::WRITE ||
+      if (request -> type == MemoryRequest::WRITE ||
         request -> type == MemoryRequest::WRITEBACK ||
         request -> type == MemoryRequest::PREFETCH) {
       // do nothing
@@ -354,6 +251,10 @@ protected:
       // do nothing
       return 0;
     }
+
+    //moved this down here
+    _distance = prefetchDistance;
+    _degree = prefetchDegree;
 
     _appCounter[request -> cpuID] ++;
 

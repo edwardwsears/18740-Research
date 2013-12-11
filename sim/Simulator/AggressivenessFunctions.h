@@ -18,7 +18,7 @@
 #define INC 1
 
 // FIRST ORDER PREFETCHERS BEGIN
-int ComputeAggressiveness0(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness0(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC: return DEC; break;
@@ -29,7 +29,7 @@ int ComputeAggressiveness0(uint32 accuracy, bool late, bool pollute, bool covera
 
 }
 
-int ComputeAggressiveness1(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness1(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(pollute){
 		case LOW: return INC; break;
@@ -38,7 +38,7 @@ int ComputeAggressiveness1(uint32 accuracy, bool late, bool pollute, bool covera
 
 }
 
-int ComputeAggressiveness2(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness2(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(mem_band){
 		case LOW: return DEC; break;
@@ -51,7 +51,7 @@ int ComputeAggressiveness2(uint32 accuracy, bool late, bool pollute, bool covera
 
 // SECOND OREDER PREFETCHERS BEGIN
 
-int ComputeAggressiveness3(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness3(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -76,7 +76,7 @@ int ComputeAggressiveness3(uint32 accuracy, bool late, bool pollute, bool covera
 
 }  
 
-int ComputeAggressiveness4(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness4(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -101,7 +101,7 @@ int ComputeAggressiveness4(uint32 accuracy, bool late, bool pollute, bool covera
 
 }
 
-int ComputeAggressiveness5(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness5(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -126,7 +126,7 @@ int ComputeAggressiveness5(uint32 accuracy, bool late, bool pollute, bool covera
 
 }
                            
-int ComputeAggressiveness6(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness6(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -151,7 +151,7 @@ int ComputeAggressiveness6(uint32 accuracy, bool late, bool pollute, bool covera
 
 }
 
-int ComputeAggressiveness7(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness7(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(late){
 		case LOW:
@@ -170,7 +170,7 @@ int ComputeAggressiveness7(uint32 accuracy, bool late, bool pollute, bool covera
 
 }
 
-int ComputeAggressiveness8(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness8(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(late){
 		case LOW:
@@ -190,7 +190,7 @@ int ComputeAggressiveness8(uint32 accuracy, bool late, bool pollute, bool covera
 
 }
 
-int ComputeAggressiveness9(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness9(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(late){
 		case LOW:
@@ -210,7 +210,7 @@ int ComputeAggressiveness9(uint32 accuracy, bool late, bool pollute, bool covera
 
 }
 
-int ComputeAggressiveness10(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness10(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(coverage){
 		case LOW:
@@ -230,7 +230,7 @@ int ComputeAggressiveness10(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness11(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness11(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(coverage){
 		case LOW:
@@ -250,7 +250,7 @@ int ComputeAggressiveness11(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness12(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness12(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(pollute){
 		case LOW:
@@ -274,7 +274,7 @@ int ComputeAggressiveness12(uint32 accuracy, bool late, bool pollute, bool cover
 
 // THIRD ORDER PREFETCHERS BEGIN
 
-int ComputeAggressiveness13(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness13(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -331,7 +331,7 @@ int ComputeAggressiveness13(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness14(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness14(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -387,7 +387,7 @@ int ComputeAggressiveness14(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness15(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness15(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -444,7 +444,7 @@ int ComputeAggressiveness15(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness16(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness16(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(late){
 		case LOW:
@@ -485,7 +485,7 @@ int ComputeAggressiveness16(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness17(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness17(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(late){
 		case LOW:
@@ -526,7 +526,7 @@ int ComputeAggressiveness17(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness18(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness18(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -583,7 +583,7 @@ int ComputeAggressiveness18(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness19(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness19(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -640,7 +640,7 @@ int ComputeAggressiveness19(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness20(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness20(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -697,7 +697,7 @@ int ComputeAggressiveness20(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness21(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness21(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(late){
 		case LOW:
@@ -738,7 +738,7 @@ int ComputeAggressiveness21(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness22(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness22(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(coverage){
 		case LOW:
@@ -783,7 +783,7 @@ int ComputeAggressiveness22(uint32 accuracy, bool late, bool pollute, bool cover
 
 // FOURTH ORDER PREFETCHERS BEGIN
 
-int ComputeAggressiveness23(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness23(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -902,7 +902,7 @@ int ComputeAggressiveness23(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness24(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness24(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -1021,7 +1021,7 @@ int ComputeAggressiveness24(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness25(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness25(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(late){
 		case LOW:
@@ -1104,7 +1104,7 @@ int ComputeAggressiveness25(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness26(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness26(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -1223,7 +1223,7 @@ int ComputeAggressiveness26(uint32 accuracy, bool late, bool pollute, bool cover
 
 }
 
-int ComputeAggressiveness27(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness27(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
@@ -1346,7 +1346,7 @@ int ComputeAggressiveness27(uint32 accuracy, bool late, bool pollute, bool cover
 
 // FIFTH ORDER PREFETCHERS BEGIN
 
-int ComputeAggressiveness28(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+int ComputeAggressiveness28(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	switch(accuracy){
 		case LOW_ACC:
