@@ -14,7 +14,25 @@
 #include "MemoryComponent.h"
 #include "Types.h"
 #include "GenericTagStore.h"
+#include "L2_miss_count.h"
 
+//prefetch variables
+int global_accesses;
+int global_reads;
+int global_writebacks;
+int global_misses;
+int global_prefetchDemandMisses;
+int global_evictions;
+int global_dirty_evictions;
+
+int global_prefetches;
+int global_prefetch_misses;
+
+int global_unused_prefetches;
+int global_used_prefetches;
+int global_unreused_prefetches;
+int global_reused_prefetches;
+int global_prefetch_use_miss;
 // -----------------------------------------------------------------------------
 // Standard includes
 // -----------------------------------------------------------------------------
@@ -228,6 +246,25 @@ public:
     CLOSE_ALL_LOGS;
   }
 
+  void copyGlobals(){
+    global_accesses = accesses;
+    global_reads = reads;
+    global_writebacks = writebacks;
+    global_misses = misses;
+    global_prefetchDemandMisses = prefetchDemandMisses;
+    global_evictions = evictions;
+    global_dirty_evictions = dirty_evictions;
+    
+    global_prefetches = prefetches;
+    global_prefetch_misses = prefetch_misses;
+    
+    global_unused_prefetches = unused_prefetches;
+    global_used_prefetches = used_prefetches;
+    global_unreused_prefetches = unreused_prefetches;
+    global_reused_prefetches = reused_prefetches;
+
+    global_prefetch_use_miss = prefetch_use_miss;
+  }
 
 protected:
 
@@ -237,6 +274,7 @@ protected:
   // -------------------------------------------------------------------------
 
   cycles_t ProcessRequest(MemoryRequest *request) {
+
 
     // update stats
     INCREMENT(accesses);
@@ -361,6 +399,9 @@ protected:
       request -> serviced = true;
       return _tagStoreLatency;
     }
+
+    //copy metrics to the globals
+    copyGlobals();
   }
 
 

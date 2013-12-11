@@ -22,6 +22,9 @@
 
 #define MSHR_STALL_PENALTY 10
 
+int global_mshrs;
+int global_used_mshrs;
+
 // -----------------------------------------------------------------------------
 // Class: CmpMSHR
 // Description:
@@ -49,7 +52,12 @@ class CmpMSHR : public MemoryComponent {
 
 
   public:
-
+    
+    //This function updates the memory bandwidth metric
+    void updateMemBand(){
+        global_mshrs = _count;
+        global_used_mshrs = _missed.size();
+    }
     // -------------------------------------------------------------------------
     // Constructor. It cannot take any arguments
     // -------------------------------------------------------------------------
@@ -116,6 +124,8 @@ class CmpMSHR : public MemoryComponent {
     // -------------------------------------------------------------------------
 
     cycles_t ProcessRequest(MemoryRequest *request) {
+
+      updateMemBand();
 
       // writebacks bypass the MSHR
       if (request -> type == MemoryRequest::WRITEBACK)
