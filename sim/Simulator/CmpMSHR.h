@@ -22,8 +22,8 @@
 
 #define MSHR_STALL_PENALTY 10
 
-int global_mshrs;
-int global_used_mshrs;
+double global_mshrs;
+double global_used_mshrs;
 
 // -----------------------------------------------------------------------------
 // Class: CmpMSHR

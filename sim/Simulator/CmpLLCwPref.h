@@ -17,22 +17,22 @@
 #include "L2_miss_count.h"
 
 //prefetch variables
-int global_accesses;
-int global_reads;
-int global_writebacks;
-int global_misses;
-int global_prefetchDemandMisses;
-int global_evictions;
-int global_dirty_evictions;
+double global_accesses;
+double global_reads;
+double global_writebacks;
+double global_misses;
+double global_prefetchDemandMisses;
+double global_evictions;
+double global_dirty_evictions;
 
-int global_prefetches;
-int global_prefetch_misses;
+double global_prefetches;
+double global_prefetch_misses;
 
-int global_unused_prefetches;
-int global_used_prefetches;
-int global_unreused_prefetches;
-int global_reused_prefetches;
-int global_prefetch_use_miss;
+double global_unused_prefetches;
+double global_used_prefetches;
+double global_unreused_prefetches;
+double global_reused_prefetches;
+double global_prefetch_use_miss;
 // -----------------------------------------------------------------------------
 // Standard includes
 // -----------------------------------------------------------------------------
