@@ -14,6 +14,10 @@ extern bool mem_band;
 extern uint32 prefetchDistance;
 extern uint32 prefetchDegree;
 
+//mshr variables
+extern int global_mshrs;
+extern int global_used_mshrs;
+
 //prefetch variables
 extern int global_accesses;
 extern int global_reads;
@@ -33,5 +37,11 @@ extern int global_reused_prefetches;
 extern int global_prefetch_use_miss;
 // Global variable counting number of L2 misses
 extern uint32 L2_miss_count;
+
+// pervious period calculations
+extern double prev_accuracy_percentage;
+extern double prev_late_percentage;
+extern double prev_coverage_percentage;
+extern double prev_pollute_percentage;
 
 #endif

@@ -12,6 +12,7 @@
 // Module includes
 // -----------------------------------------------------------------------------
 
+#include <iostream>
 #include "MemoryComponent.h"
 #include "GenericTagStore.h"
 #include "Types.h"
@@ -30,6 +31,11 @@ bool coverage;
 bool mem_band;
 uint32 prefetchDistance;
 uint32 prefetchDegree;
+double prev_accuracy_percentage=0;
+double prev_late_percentage=0;
+double prev_coverage_percentage=0;
+double prev_mshr_used_percentage=0;
+double prev_pollute_percentage=0;
 // -----------------------------------------------------------------------------
 // Standard includes
 // -----------------------------------------------------------------------------
@@ -125,7 +131,6 @@ class CmpCache : public MemoryComponent {
       _exclusive = false;
     }
 
-  //TODO change to only count within range (with formula from paper)
   //this function computes metric ranges:
   //
   //accuracy: (int) low = -1, medium = 0, high = 1
@@ -134,28 +139,40 @@ class CmpCache : public MemoryComponent {
   //mem_band: (boolean) high = true, low = false
   //pollute: (boolean) high = true, low = false
   void GetMetrics(){
+    cout << "enter get metrics"<<endl;
     //accuracy
     double accuracy_percentage = global_used_prefetches/global_prefetches;
-    if (accuracy_percentage>.75) accuracy = 1;
+    double accuracy_range_percentage = .5*accuracy_percentage + .5*prev_accuracy_percentage;
+    if (accuracy_range_percentage>.75) accuracy = 1;
     else if (accuracy_percentage<.40) accuracy = -1;
     else accuracy = 0;
+    prev_accuracy_percentage = accuracy_percentage;
 
     //late
     double late_percentage = global_prefetch_use_miss/global_used_prefetches;
-    if (late_percentage < .001) late = false;
+    double late_range_percentage = .5*late_percentage + .5*prev_late_percentage;
+    if (late_range_percentage < .001) late = false;
     else late = true;
+    prev_late_percentage = late_percentage;
 
     //coverage
     double coverage_percentage = global_used_prefetches/(global_used_prefetches + global_misses);
-    if (coverage_percentage > .50) coverage = true;
+    double coverage_range_percentage = .5*coverage_percentage + .5*prev_coverage_percentage;
+    if (coverage_range_percentage > .50) coverage = true;
     else coverage = false;
+    prev_coverage_percentage = coverage_percentage;
 
-    //mem_band TODO
+    //mem_band
+    double mshr_used_percentage = global_used_mshrs/global_mshrs;
+    if (mshr_used_percentage<.25) mem_band = true;
+    else mem_band = false;
 
     //pollute
     double pollute_percentage = global_prefetchDemandMisses/global_misses;
-    if (pollute_percentage < .005) pollute = false;
+    double pollute_range_percentage = .5*pollute_percentage + .5*prev_pollute_percentage;
+    if (pollute_range_percentage < .005) pollute = false;
     else pollute = true;
+    prev_pollute_percentage = pollute_percentage;
   }
 
   void AdjustAggressiveness(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
