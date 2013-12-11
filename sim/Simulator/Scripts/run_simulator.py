@@ -73,6 +73,9 @@ parser.add_argument("--no-workload-print", action = "store_true", default = Fals
     help = "do not print the workload information")
 parser.add_argument("--synthetic", action = "store_true", default = False, \
     help = "use a synthetic trace")
+parser.add_argument("--prefetcher", action= "store", default = "0", \
+    help = "determines prefetcher to use");
+
 
 args = parser.parse_args()
 
@@ -165,6 +168,7 @@ run_time = args.run_time
 warm_up = args.warm_up
 heart_beat = args.heart_beat
 ooo_window = args.ooo_window
+prefetcherNum = args.prefetcher
 
 # ------------------------------------------------------------------------------
 # For each workload, check if all the benchmarks are available. If yes, then
@@ -230,7 +234,8 @@ for workload in workloads:
             config + " --folder " + run_folder + " --num-cpus " + \
             str(len(benchmarks)) + \
             " --warm-up " + warm_up + " --run-time " + run_time + \
-            " --heart-beat " + heart_beat + " --ooo-window " + ooo_window
+            " --heart-beat " + heart_beat + " --ooo-window " + ooo_window + \
+	    " --prefetcher " + prefetcherNum
 
         if not args.synthetic:
             arguments += " --trace-files " + trace_file_string

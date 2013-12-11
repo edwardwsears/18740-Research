@@ -187,7 +187,7 @@ class CmpCache : public MemoryComponent {
 
   }
 
-  void AdjustAggressiveness(uint32 accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+  void AdjustAggressiveness(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
 
 	int aggressionChange;
 
@@ -238,6 +238,102 @@ class CmpCache : public MemoryComponent {
 	}
 
   }
+
+  int ComputeAggressiveness(int accuracy, bool late, bool pollute, bool coverage, bool mem_band){
+
+	switch(prefetcherNum){
+		case 0:
+			return ComputeAggressiveness0(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 1:
+			return ComputeAggressiveness1(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 2:
+			return ComputeAggressiveness2(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 3:
+			return ComputeAggressiveness3(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 4:
+			return ComputeAggressiveness4(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 5:
+			return ComputeAggressiveness5(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 6:
+			return ComputeAggressiveness6(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 7:
+			return ComputeAggressiveness7(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 8:
+			return ComputeAggressiveness8(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 9:
+			return ComputeAggressiveness9(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 10:
+			return ComputeAggressiveness10(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 11:
+			return ComputeAggressiveness11(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 12:
+			return ComputeAggressiveness12(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 13:
+			return ComputeAggressiveness13(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 14:
+			return ComputeAggressiveness14(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 15:
+			return ComputeAggressiveness15(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 16:
+			return ComputeAggressiveness16(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 17:
+			return ComputeAggressiveness17(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 18:
+			return ComputeAggressiveness18(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 19:
+			return ComputeAggressiveness19(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 20:
+			return ComputeAggressiveness20(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 21:
+			return ComputeAggressiveness21(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 22:
+			return ComputeAggressiveness22(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 23:
+			return ComputeAggressiveness23(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 24:
+			return ComputeAggressiveness24(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 25:
+			return ComputeAggressiveness25(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 26:
+			return ComputeAggressiveness26(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 27:
+			return ComputeAggressiveness27(accuracy,late,pollute,coverage,mem_band);
+			break;
+		case 28:
+			return ComputeAggressiveness28(accuracy,late,pollute,coverage,mem_band);
+			break;
+		default:
+			return 0;
+			break;
+	}
+   }
 
 
     // -------------------------------------------------------------------------
