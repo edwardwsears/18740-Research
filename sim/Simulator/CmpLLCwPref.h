@@ -4,6 +4,7 @@
 //    Implements a last-level cache with prefetch monitors
 // -----------------------------------------------------------------------------
 
+
 #ifndef __CMP_LLC_PREF_H__
 #define __CMP_LLC_PREF_H__
 
@@ -275,6 +276,8 @@ protected:
 
   cycles_t ProcessRequest(MemoryRequest *request) {
 
+    //copy metrics to the globals
+    copyGlobals();
 
     // update stats
     INCREMENT(accesses);
@@ -400,8 +403,6 @@ protected:
       return _tagStoreLatency;
     }
 
-    //copy metrics to the globals
-    copyGlobals();
   }
 
 

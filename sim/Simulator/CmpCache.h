@@ -25,16 +25,16 @@ uint32 L2_miss_count;
 
 // Feedback variables
 int aggression = 1;
-int accuracy;
-bool late;
-bool pollute;
-bool coverage;
-bool mem_band;
+int accuracy = 1;
+bool late = false;
+bool pollute = false;
+bool coverage = true;
+bool mem_band = true;
 uint32 prefetchDistance;
 uint32 prefetchDegree;
-double prev_accuracy_percentage=0;
+double prev_accuracy_percentage=1;
 double prev_late_percentage=0;
-double prev_coverage_percentage=0;
+double prev_coverage_percentage=1;
 double prev_mshr_used_percentage=0;
 double prev_pollute_percentage=0;
 // -----------------------------------------------------------------------------
@@ -142,6 +142,7 @@ class CmpCache : public MemoryComponent {
   void GetMetrics(){
     //accuracy
     double accuracy_percentage = global_used_prefetches/global_prefetches;
+	//cout << "Accuracy_percentage: " <<accuracy_percentage<< endl;
     double accuracy_range_percentage = .5*accuracy_percentage + .5*prev_accuracy_percentage;
     if (accuracy_range_percentage>.75) accuracy = 1;
     else if (accuracy_percentage<.40) accuracy = -1;
@@ -151,6 +152,7 @@ class CmpCache : public MemoryComponent {
 
     //late
     double late_percentage = global_prefetch_use_miss/global_used_prefetches;
+	//cout << "Late_percentage: " <<late_percentage<< endl;
     double late_range_percentage = .5*late_percentage + .5*prev_late_percentage;
     if (late_range_percentage < .001) late = false;
     else late = true;
@@ -159,6 +161,7 @@ class CmpCache : public MemoryComponent {
 
     //coverage
     double coverage_percentage = global_used_prefetches/(global_used_prefetches + global_misses);
+	//cout << "coverage_percentage: " <<coverage_percentage<< endl;
     double coverage_range_percentage = .5*coverage_percentage + .5*prev_coverage_percentage;
     if (coverage_range_percentage > .50) coverage = true;
     else coverage = false;
@@ -168,12 +171,14 @@ class CmpCache : public MemoryComponent {
 
     //mem_band
     double mshr_used_percentage = global_used_mshrs/global_mshrs;
+	//cout << "mshr_used_percentage: " <<mshr_used_percentage<< endl;
     if (mshr_used_percentage<.25) mem_band = true;
     else mem_band = false;
 
 
     //pollute
     double pollute_percentage = global_prefetchDemandMisses/global_misses;
+	//cout << "pollute_percentage: " <<pollute_percentage<< endl;
     double pollute_range_percentage = .5*pollute_percentage + .5*prev_pollute_percentage;
     if (pollute_range_percentage < .005) pollute = false;
     else pollute = true;
@@ -188,13 +193,13 @@ class CmpCache : public MemoryComponent {
 
 	aggressionChange = ComputeAggressiveness28(accuracy,late,pollute,coverage,mem_band);
 
-/*	cout << "Adjusting aggressiveness: " << endl;
-	cout << "acc = " << accuracy << endl;
-	cout << "late = " << late << endl; 
-	cout << "pollute = " << pollute << endl; 
-	cout << "coverage = " << coverage << endl; 
-	cout << "mem_band = " << mem_band << endl; 
-*/
+	//cout << "Adjusting aggressiveness: " << endl;
+	//cout << "acc = " << accuracy << endl;
+	//cout << "late = " << late << endl; 
+	//cout << "pollute = " << pollute << endl; 
+	//cout << "coverage = " << coverage << endl; 
+	//cout << "mem_band = " << mem_band << endl; 
+
 	if(aggressionChange == NOC) return;
 	else{
 	
